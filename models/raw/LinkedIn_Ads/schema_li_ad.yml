@@ -1,0 +1,45 @@
+version: 2
+
+sources:
+  - name: bq_ddm_LI_ad
+    database: datapilot-datadrivenmarketing
+    schema: LinkedInAds_dp
+    tables:
+      - name: Accounts
+      - name: AccountsDailyReport
+      - name: AdForms
+      - name: Ads
+      - name: AdsDailyReport
+      - name: CampaignGroups
+      - name: CampaignGroupsDailyReport
+      - name: CampaignInsights 
+      - name: CampaignRecommendations
+      - name: Campaigns
+      - name: CampaignsDailyReport
+      - name: CarouselAds
+      - name: ConversionAds
+      - name: Conversions
+      - name: MessageAds
+      - name: SponsoredUpdateAds
+      - name: TextAds
+  
+  - name: bq_ddm_LI_ad_ft
+    database: datapilot-datadrivenmarketing
+    schema: linkedin_ads_fivetran
+    tables:
+      - name: account_history
+      - name: account_serving_status_history
+      - name: account_user_history
+      - name: ad_analytics_by_campaign
+      - name: ad_analytics_by_creative
+      - name: campaign_group_history
+      - name: campaign_group_serving_status_history
+      - name: campaign_history
+      - name: campaign_serving_status_history
+      - name: creative_history
+      - name: creative_serving_status_history
+      - name: fivetran_audit
+      - name: targeting_criteria_exclude_history
+      - name: targeting_criteria_include_history
+      - name: video_ad_history
+      
