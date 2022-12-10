@@ -1,0 +1,25 @@
+version: 2
+
+sources:
+  - name: bq_ddm_G_an_ft
+    database: datapilot-datadrivenmarketing
+    schema: google_analytics_fivetran
+    tables:
+      - name: fivetran_audit
+      - name: google_analytics_fivetran_table_ad_adwords_campaigns
+      - name: google_analytics_fivetran_table_ad_adwords_keyword
+      - name: google_analytics_fivetran_table_adwords_audience_overview
+      - name: google_analytics_fivetran_table_adwords_browsing_os_overview
+      - name: google_analytics_fivetran_table_adwords_hourly_stats
+      - name: google_analytics_fivetran_table_campaign_performance
+      - name: google_analytics_fivetran_table_events_overview
+      - name: google_analytics_fivetran_table_social_media_acquisitions
+      - name: google_analytics_fivetran_table_traffic
+
+  - name: bq_ddm_G_an
+    database: datapilot-datadrivenmarketing
+    schema: GoogleAnalytics2_dp
+    tables:
+      - name: CompleteAnalytics
+      - name: GoogleAnalytcs_dd_dp
+      
