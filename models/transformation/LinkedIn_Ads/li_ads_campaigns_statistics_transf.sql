@@ -9,7 +9,7 @@
 with li_ads_ad_analytics_stats_campaign_raw as (
 
     SELECT 
-        campaign_id,Date(Min(day)) AS start_date, ROUND(SUM(cost_in_usd),3) AS Spent, SUM(approximate_unique_impressions) AS approximate_unique_impressions,
+        campaign_id ,Date(Min(day)) AS start_date,CAST(ROUND(SUM(cost_in_usd),2) AS NUMERIC) AS Spent, SUM(approximate_unique_impressions) AS approximate_unique_impressions,
        ROUND (CAST(( SUM(cost_in_usd)/SUM(approximate_unique_impressions)*1000) AS NUMERIC),3) AS CPM, SUM(clicks) AS clicks, SUM(impressions) AS impressions,
         ROUND (CAST(( SUM(clicks) / SUM(impressions)) AS NUMERIC),3) AS CTR,ROUND( CAST(( SUM(cost_in_usd)/SUM(clicks)) AS NUMERIC),3) AS CPC , 
         SUM(external_website_conversions) AS conversions, ROUND (IF  (SUM(external_website_conversions) > 0,SUM(cost_in_usd)/SUM(external_website_conversions),0) ,3)AS Cost_per_conversion,
