@@ -5,15 +5,16 @@
     )
 }}
 
-with g_ad_campaign_stats_raw as (
+with g_ad_google_ads_adgroups_metrics_raw as (
 
     SELECT 
-        _fivetran_id, customer_id, date,_fivetran_synced as ft1, active_view_impressions,active_view_measurability,active_view_measurable_cost_micros,
-        active_view_measurable_impressions,active_view_viewability,ad_network_type,base_campaign,clicks,conversions,conversions_value,
-        cost_micros,device,id,impressions,interaction_event_types,interactions,view_through_conversions
+        _fivetran_id, customer_id,date,_fivetran_synced as ft1, absolute_top_impression_percentage,ad_group_id,ad_id,
+    all_conversions,average_cost,average_cpc,average_cpe,average_cpm,average_cpv,average_page_views,average_time_on_site,bounce_rate,
+    campaign_id AS id,clicks,conversions,cost_micros,cost_per_all_conversions,cost_per_conversion,engagement_rate,engagements,impressions,
+    interactions
 
     FROM 
-        {{ ref('g_ad_campaign_stats_raw')}}
+        {{ ref('g_ad_google_ads_adgroups_metrics_raw')}}
 
     
     
@@ -37,7 +38,7 @@ final as (
     Select
         *
 
-    From g_ad_campaign_stats_raw
+    From g_ad_google_ads_adgroups_metrics_raw
 
     left join g_ad_campaign_history_raw using (id)
 

@@ -22,4 +22,36 @@ sources:
     tables:
       - name: CompleteAnalytics
       - name: GoogleAnalytcs_dd_dp
+
+
+
+  - name: bq_ddm_G_ad
+    database: datapilot-datadrivenmarketing
+    schema: google_ads_fivetran
+    tables:
+      - name: account_history
+      - name: account_hourly_stats
+      - name: account_stats
+      - name: ad_group_criterion_history
+      - name: ad_group_history
+      - name: ad_group_hourly_stats
+      - name: ad_group_stats
+      - name: ad_history
+      - name: ad_stats
+      - name: audience_stats
+      - name: campaign_budget_history
+      - name: campaign_history
+      - name: campaign_hourly_stats
+      - name: campaign_network_setting_history
+      - name: campaign_stats
+      - name: campaign_targeting_setting_history
+      - name: geo_target
+      - name: google_ads_adgroups_metrics
+      - name: google_ads_campaign
+      - name: google_ads_campaign_budget
+      - name: keyword_stats
+      - name: responsive_search_ad_history
+      - name: campaign_criterion_history
+
+      
       
