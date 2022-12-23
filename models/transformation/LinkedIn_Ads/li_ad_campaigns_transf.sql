@@ -8,7 +8,7 @@
 with li_ads_ad_analytics_by_campaign_raw as (
 
     SELECT 
-        campaign_id, SUM(cost_in_usd) AS Spent
+        campaign_id, CAST(ROUND(SUM(cost_in_usd),2) AS NUMERIC) AS Spent
 
     FROM 
         {{ ref('li_ads_ad_analytics_by_campaign_raw')}}
