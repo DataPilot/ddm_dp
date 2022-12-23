@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: bq_ddm_hubspot
+    database: datapilot-datadrivenmarketing
+    schema: hubspot_dp
+    tables:
+      - name: CallDispositions
+      - name: Campaigns
+      - name: Companies
+      - name: CompanyProperties
+      - name: ContactListContacts
+      - name: ContactLists
+      - name: ContactProperties
+      - name: Contacts
+      - name: DealPipelines
+      - name: DealProperties
+      - name: Domains
+      - name: EmailEvents
+      - name: EngagementContacts
+      - name: Engagements
+      - name: Files
+      - name: MarketingEmails
+      - name: Owners
+      - name: TicketProperties
+    
+      
+  
