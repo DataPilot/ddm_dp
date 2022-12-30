@@ -15,7 +15,6 @@ with g_ad_google_ads_adgroups_metrics_raw as (
 
     FROM 
         {{ ref('g_ad_google_ads_adgroups_metrics_raw')}}
-
     
     
 ),
@@ -36,7 +35,7 @@ g_ad_campaign_history_raw as (
 final as (
 
     Select
-        *
+        *,CAST (id AS STRING) AS id2
 
     From g_ad_google_ads_adgroups_metrics_raw
 
