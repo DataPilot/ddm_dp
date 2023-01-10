@@ -6,4 +6,5 @@
 
 SELECT
     *
-FROM {{ source('bq_ddm_G_ad', 'account_history') }}
+FROM {{ source('bq_ddm_LI_p', 'share_share_statistic') }} 
+

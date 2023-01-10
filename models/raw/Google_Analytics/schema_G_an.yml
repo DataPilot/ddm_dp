@@ -24,6 +24,13 @@ sources:
       - name: GoogleAnalytcs_dd_dp
 
 
+  - name: bq_ddm_G_an_in
+    database: datapilot-datadrivenmarketing
+    schema: GoogleAnalytics_internal
+    tables:
+      - name: CompleteAnalytics
+
+
 
   - name: bq_ddm_G_ad
     database: datapilot-datadrivenmarketing

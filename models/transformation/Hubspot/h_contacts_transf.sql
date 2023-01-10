@@ -19,5 +19,5 @@ with h_Contacts_raw as (
     
 )
 
-SELECT *
+SELECT *, id as id2
 FROM h_Contacts_raw

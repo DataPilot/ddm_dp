@@ -6,4 +6,4 @@
 
 SELECT
     *
-FROM {{ source('bq_ddm_G_ad', 'account_history') }}
+FROM {{ source('bq_ddm_G_an_in', 'CompleteAnalytics') }} 

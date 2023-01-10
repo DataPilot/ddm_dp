@@ -23,6 +23,49 @@ sources:
       - name: MarketingEmails
       - name: Owners
       - name: TicketProperties
+
+  - name: bq_ddm_hubspot_fv
+    database: datapilot-datadrivenmarketing
+    schema: hubspot
+    tables:
+      - name: company
+      - name: company_property_history
+      - name: contact
+      - name: contact_form_submission
+      - name: contact_list
+      - name: contact_list_member
+      - name: contact_property_history
+      - name: deal_pipeline
+      - name: deal_pipeline_stage
+      - name: email_campaign
+      - name: email_event
+      - name: email_event_bounce
+      - name: email_event_click
+      - name: email_event_deferred
+      - name: email_event_delivered
+      - name: email_event_dropped
+      - name: email_event_open
+      - name: email_event_sent
+      - name: email_event_status_change
+      - name: email_subscription
+      - name: email_subscription_change
+      - name: engagement
+      - name: engagement_call
+      - name: engagement_company
+      - name: engagement_contact
+      - name: engagement_note
+      - name: engagement_task
+      - name: form
+      - name: marketing_email
+      - name: marketing_email_campaign
+      - name: marketing_email_contact_list
+      - name: owner
+      - name: property
+      - name: property_option
+      - name: ticket_pipeline
+      - name: ticket_pipeline_stage
+      - name: users
+      
     
       
   

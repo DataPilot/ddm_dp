@@ -6,4 +6,4 @@
 
 SELECT
     *
-FROM {{ source('bq_ddm_G_ad', 'account_history') }}
+FROM {{ source('bq_ddm_hubspot_fv', 'marketing_email_contact_list') }} 
