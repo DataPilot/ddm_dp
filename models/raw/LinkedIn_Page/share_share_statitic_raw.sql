@@ -1,4 +1,3 @@
-
 {{
     config(
         materialized='table'
@@ -7,5 +6,5 @@
 
 SELECT
     *
-FROM {{ source('bq_ddm_LI_p', 'ugc_post_history') }} 
+FROM {{ source('bq_ddm_LI_p', 'share_share_statistic') }} 
 

@@ -23,7 +23,8 @@ google_analytics_fivetran_table_ad_adwords_campaigns_raw as (
 
     SELECT 
         _fivetran_id AS f_ID_1,date,profile,_fivetran_synced as ft1, ad_clicks, ad_cost,CAST (adwords_campaign_id AS STRING) as id,
-        bounce_rate, cpc, goal_completions_all, goal_conversion_rate_all, goal_value_all, sessions, users
+        bounce_rate, cpc, goal_completions_all, goal_conversion_rate_all, goal_value_all, sessions, users,pageviews_per_session,impressions,
+        ctr, time_on_page, time_on_screen
     FROM
          {{ ref('google_analytics_fivetran_table_ad_adwords_campaigns_raw')}}
 
