@@ -21,4 +21,4 @@ with google_analytics_internal_raw as (
 SELECT
     *
 FROM google_analytics_internal_raw
-
+ORDER BY Date DESC
