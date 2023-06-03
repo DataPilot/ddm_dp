@@ -58,10 +58,16 @@ final as (
 
     left join ugc_post_share_content_media_raw using(id)
 
-)
+),
+
+final2 as (
 
 SELECT 
     * 
 FROM 
     final
+)
 
+Select *
+FROM final2
+-- Where specific_content_share_commentary_text like '%The numbers say it all! Unlock the perfect balance of data%'
