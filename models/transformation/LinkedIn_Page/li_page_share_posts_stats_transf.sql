@@ -55,10 +55,16 @@ final as (
 
     left join share_history_raw using(id2)
 
-)
-
+) , final2 as
+(
 SELECT 
     * 
 FROM 
     final
 
+)
+
+SELECT *
+FROM final2
+
+-- Where text like '%The numbers say it all! Unlock the perfect balance of data%'
