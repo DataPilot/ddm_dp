@@ -24,4 +24,5 @@ FROM google_analytics_internal_raw
 Where source = 'hubspot' OR
     source = 'hs_email' OR
     source = 'email' OR
-    source = 'Email'
+    source = 'Email' OR
+    source = 'EMAIL'
