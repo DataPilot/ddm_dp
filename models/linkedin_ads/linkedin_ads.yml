@@ -1,0 +1,556 @@
+version: 2
+
+sources:
+  - name: linkedin_ads # This source will only be used if you are using a single linkedin source connector. If multiple sources are being unioned, their tables will be directly referenced via adapter.get_relation.
+    schema: "{{ var('linkedin_ads_schema', 'linkedin_ads') }}"
+    database: "{% if target.type != 'spark'%}{{ var('linkedin_ads_database', target.database) }}{% endif %}"
+
+    loader: fivetran
+    loaded_at_field: _fivetran_synced
+    freshness: 
+      warn_after: {count: 48, period: hour}
+      error_after: {count: 168, period: hour}
+      
+    config:
+      enabled: "{{ var('ad_reporting__linkedin_ads_enabled', true) }}"
+
+    tables:
+      - name: ad_analytics_by_creative
+        identifier: "{{ var('linkedin_ads_ad_analytics_by_creative_identifier', 'ad_analytics_by_creative') }}"
+        description: Each record in this table represents the daily performance of ads at the creative level.
+        columns:
+          - name: creative_id
+            description: The ID of the related creative.
+
+          - name: day
+            description: The day of the activity.
+
+          - name: clicks
+            description: The count of chargeable clicks.
+
+          - name: impressions
+            description: This is the count of "impressions" for Direct Ads and Sponsored Updates and "sends" for InMails.
+
+          - name: cost_in_local_currency
+            description: The cost of the ads in the local currency.
+
+          - name: cost_in_usd
+            description: The cost of the ads in the USD.
+
+      - name: creative_history
+        description: Each record represents a 'version' of a creative.
+        identifier: "{{ var('linkedin_ads_creative_history_identifier', 'creative_history') }}"
+        columns:
+          - name: id
+            description: Unique internal ID representing the creative.
+
+          - name: last_modified_time
+            description: The timestamp of when the version was updated (Linkedin Ads pre-January 2023 API Update).
+
+          - name: last_modified_at
+            description: The timestamp of when the version was updated (Linkedin Ads post-January 2023 API Update).
+          
+          - name: created_time
+            description: The timestamp of when the creative was created (Linkedin Ads pre-January 2023 API Update).
+
+          - name: created_at
+            description: The timestamp of when the creative was created (Linkedin Ads post-January 2023 API Update).
+
+          - name: campaign_id
+            description: The ID of the campaign the creative belongs to.
+
+          - name: click_uri
+            description: |
+                Required when creative type is TEXT_AD. Maximum character limit of 500 after URL encoding all special characters. 
+                Limit does not include the "https://" prefix.
+
+          - name: intended_status
+            description: |
+                ACTIVE - Creative creation is complete and creative is available for review and serve.
+                PAUSED - Creative creation is complete and creative is current, but should temporarily not be served. This status is not valid upon creation.
+                DRAFT - Creative creation is incomplete and may still be edited.
+                ARCHIVED - Creative creation is complete, but creative should not be served and should be separated from non-archived creatives in any UI.
+                CANCELED - Creative is permanently canceled.
+
+      - name: campaign_history
+        description: Each record represents a 'version' of a campaign.
+        identifier: "{{ var('linkedin_ads_campaign_history_identifier', 'campaign_history') }}"
+        columns:
+          - name: id
+            description: Unique internal ID representing the campaign.
+              
+          - name: last_modified_time
+            description: The timestamp of when the version was updated.
+              
+          - name: account_id
+            description: The ID of the account the campaign belongs to.
+              
+          - name: campaign_group_id
+            description: The ID of the campaign group the campaign belongs to.
+              
+          - name: created_time
+            description: The timestamp of when the campaign was created.
+              
+          - name: name
+            description: A label for the campaign.
+              
+          - name: version_tag
+            description: An integer representation of the version of the campaign.
+          
+          - name: audience_expansion_enabled
+            description: Boolean (default=false) representing whether Audience Expansion is enabled for the campaign provides query expansion for certain targeting criteria.
+
+          - name: cost_type
+            description: |
+              CPM - Cost per thousand advertising impressions. If type=SPONSORED_INMAILS; cost per send(CPS) is measured as CPM x 1000.
+              CPC- Cost per individual click on the associated link.
+              CPV- Cost per view for video ads.
+
+          - name: creative_selection
+            description: |
+              ROUND_ROBIN - Rotate through available creatives to serve them as evenly as possible.
+              OPTIMIZED (default) - Bias selection taking into account such as expected performance. Not available for Message and Conversation Ads (type=SPONSORED_INMAILS).
+
+          - name: daily_budget_amount
+            description: Maximum amount to spend per day UTC. The amount of money as a real number string.
+          
+          - name: daily_budget_currency_code
+            description: ISO currency code. The currency must match that of the parent account.
+          
+          - name: format
+            description: The ad format on the campaign level. See https://docs.microsoft.com/en-us/linkedin/marketing/integrations/ads/campaign-formats?view=li-lms-2022-07 
+          
+          - name: locale_country
+            description: Locale of the campaign. An uppercase two-letter country code as defined by ISO-3166. 
+
+          - name: locale_language
+            description: Locale of the campaign. A lowercase two-letter language code as defined by ISO-639. 
+
+          - name: objective_type
+            description: >
+              Campaign Objective type values. Click [here](https://docs.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/ad-budget-pricing-type-combinations?view=li-lms-2022-07) for Campaign Objective descriptions. One of:
+              - BRAND_AWARENESS
+              - ENGAGEMENT
+              - JOB_APPLICANTS
+              - LEAD_GENERATION
+              - WEBSITE_CONVERSIONS
+              - WEBSITE_VISITS
+              - VIDEO_VIEWS
+
+          - name: offsite_delivery_enabled
+            description: >
+              Boolean indicating if this campaign to allowed to be served on the LinkedIn Audience Network to extend the reach of your campaign by delivering ads beyond the 
+              LinkedIn feed to members on third-party apps and sites.	(default will be "True" from June 30, 2022)
+
+          - name: optimization_target_type
+            description: Determines how this campaign is optimized for spending. If this is not set, there is no optimization. Refer to the documentation here. Default = 'NONE'.
+
+          - name: run_schedule_start
+            description: Scheduled date range to run associated creatives. The start date must be non-null. Represents the inclusive (greater than or equal to) value in which to start the range.
+
+          - name: run_schedule_end
+            description: >
+              Scheduled date range to run associated creatives. The start date must be non-null. Represents the exclusive (strictly less than) value in which to end the range, if provided.
+          
+          - name: status
+            description: |
+              ACTIVE - Denotes that the campaign is fully servable.
+              PAUSED - Denotes that the campaign meets all requirements to be served, but temporarily should not be.
+              ARCHIVED - Denotes that the campaign is presently inactive, and should mostly be hidden in the UI until un-archived.
+              COMPLETED - Denotes that the campaign has reached a specified budgetary or chronological limit.
+              CANCELED - Denotes that the campaign has been permanently canceled, such as when an advertising account is permanently closed.
+              DRAFT - Denotes that the campaign is still being edited and not eligible for serving. Some validation will be postponed until the campaign is activated.
+              PENDING_DELETION - Denotes that the campaign has been requested to be deleted that is currently pending.
+              REMOVED - Denotes that the campaign was deleted, but must remain fetchable due to the existence of performance data.
+
+          - name: type
+            description: |
+              TEXT_AD - Text-based ads that show up in the right column or top of the page on LinkedIn.
+              SPONSORED_UPDATES - Native ads that promote a company's content updates in the LinkedIn feed.
+              SPONSORED_INMAILS - Personalized messages with a call-to-action button delivered to a LinkedIn's member inbox.
+              DYNAMIC - Ads that are dynamically personalized.
+          
+          - name: unit_cost_amount
+            description: >
+              This value is used as one of the following: amount to bid (for manual bidding), amount which is the target cost (for target cost bidding) per click, 
+              impression, or other event depending on the pricing model, or cost cap (for cost cap bidding). The amount of money as a real number string. 
+              The amount should be non-negative if the bidding strategy is manual, target cost, or cost cap bidding. The default is 0 with the currency code set to match that of the associated account.
+
+          - name: unit_cost_currency_code
+            description: >
+              Amount to bid per click, impression, or other event depending on the pricing model. The default is 0 with the currency code set to match that of the associated account. 
+              ISO currency code.
+
+      - name: campaign_group_history
+        description: Each record represents a 'version' of a campaign group.
+        identifier: "{{ var('linkedin_ads_campaign_group_history_identifier', 'campaign_group_history') }}"
+        columns:
+          - name: id
+            description: Unique internal ID representing the campaign group.
+            
+          - name: last_modified_time
+            description: The timestamp of when the version was updated.
+            
+          - name: account_id
+            description: The ID of the account the campaign group belongs to.
+            
+          - name: created_time
+            description: The timestamp of when the campaign group was created.
+            
+          - name: name
+            description: A label for the campaign group.
+
+          - name: backfilled
+            description: Flag that denotes whether the campaign group was created organically or to backfill existing campaigns. This is a read-only field set by the system. Default = false
+
+          - name: run_schedule_start
+            description: Represents the inclusive (greater than or equal to) date when to start running the associated campaigns under this campaign group. This field is required.
+
+          - name: run_schedule_end
+            description: Represents the exclusive (strictly less than) date when to stop running the associated campaigns under this campaign group. If this field is unset, it indicates an open range with no end date. 
+          
+          - name: status
+            description: >
+              Status of campaign group. Possible values are:
+              ACTIVE - Denotes that the campaign group is capable of serving ads, subject to run date and budget limitations (as well as any other limitations at the account or campaign level).
+              ARCHIVED - Denotes that the campaign group is presently inactive, and should mostly be hidden in the UI until un-archived.
+              CANCELLED - Denotes that the campaign group has been permanently canceled and cannot be reactivated. Not a settable status.
+              DRAFT - Denotes that the campaign group is in a preliminary state and should temporarily not be served.
+              PAUSED - Denotes that the campaign group meets all requirements to be served, but temporarily should not be.
+              PENDING_DELETION - Denotes that the campaign group has been requested to be deleted that is currently pending.
+              REMOVED - Denoted that the campaign group was deleted, but must remain fetchable due to the existence of performance data.
+      
+      - name: account_history
+        description: Each record represents a 'version' of an account. 
+        identifier: "{{ var('linkedin_ads_account_history_identifier', 'account_history') }}"
+        columns:
+          - name: id
+            description: Unique internal ID representing the account.
+
+          - name: last_modified_time
+            description: The timestamp of when the version was updated.
+
+          - name: created_time
+            description: The timestamp of when the account was created.
+
+          - name: name
+            description: A label for the account.
+
+          - name: currency
+            description: The ISO 4217 currency code of the account, such as 'USD' for United States Dollar (default).
+
+          - name: version_tag
+            description: An integer representation of the version of the account.
+
+          - name: notified_on_campaign_optimization
+            description: Boolean (default=false) indicating if the campaign contact is notified about campaign optimization opportunities
+
+          - name: notified_on_creative_approval
+            description: Boolean (default=false) indicating if the creative contact is notified when a creative has been reviewed and approved
+
+          - name: notified_on_creative_rejection
+            description: Boolean (default=false) indicating if the creative contact is notified when a creative has been rejected due to content
+
+          - name: notified_on_end_of_campaign
+            description: Boolean (default=false) indicating if the campaign contact is notified when an associated campaign has been completed
+
+          - name: status
+            description: |
+              ACTIVE - Account is active; this is the default state
+              CANCELLED - Account has been permanently cancelled
+              DRAFT - Account is in draft status, meaning it's not yet fully set up and it is not serving
+              PENDING_DELETION - Denotes that the account has been requested to be deleted that is currently pending
+              REMOVED - Denotes that the account was deleted, but must remain fetchable due to the existence of performance data.
+
+          - name: type
+            description: |
+              BUSINESS - This is the only value allowed when creating accounts through the API.
+              ENTERPRISE - This value cannot be used to create accounts through the API and is reserved for accounts created by LinkedIn's internal ad operations systems.
+
+      - name: ad_analytics_by_campaign
+        description: Each record in this table represents the daily performance of ads at the campaign level.
+        identifier: "{{ var('linkedin_ads_ad_analytics_by_campaign_identifier', 'ad_analytics_by_campaign') }}"
+        columns:
+          - name: campaign_id
+            description: The ID of the related campaign.
+
+          - name: day
+            description: The day of the activity.
+
+          - name: clicks
+            description: The count of chargeable clicks.
+
+          - name: impressions
+            description: This is the count of "impressions" for Direct Ads and Sponsored Updates and "sends" for InMails.
+
+          - name: cost_in_local_currency
+            description: The cost of the ads in the local currency.
+
+          - name: cost_in_usd
+            description: The cost of the ads in the USD.
+
+
+      - name: conversion_associated_campaign
+        description: "Each record in this table represents an association between a campaign and a conversion."
+        identifier: "{{ var('linkedin_ads_conversion_associated_campaign_identifier', 'conversion_associated_campaign') }}"
+        columns:
+          - name: associated_at
+            description: "The timestamp when the campaign and conversion association was made."
+
+          - name: campaign_id
+            description: "The ID of the related campaign."
+
+          - name: conversion_id
+            description: "The ID of the associated conversion."
+
+          - name: _fivetran_synced
+            description: "Timestamp of the last sync by Fivetran."
+
+      - name: conversion_history
+        description: "This table contains the historical data of conversions."
+        identifier: "{{ var('linkedin_ads_conversion_history_identifier', 'conversion_history') }}"
+        columns:
+          - name: id
+            description: "The unique identifier of the conversion."
+
+          - name: _fivetran_synced
+            description: "Timestamp of the last sync by Fivetran."
+
+          - name: account_id
+            description: "The account ID associated with the conversion."
+
+          - name: attribution_type
+            description: "The type of attribution assigned to the conversion."
+
+          - name: created
+            description: "The creation timestamp of the conversion record."
+
+          - name: enabled
+            description: "Indicates whether the conversion is enabled or not."
+
+          - name: image_pixel_tag
+            description: "The image pixel tag associated with the conversion."
+
+          - name: last_callback_at
+            description: "The timestamp of the last callback for the conversion."
+
+          - name: last_modified
+            description: "The timestamp when the conversion was last modified."
+
+          - name: latest_first_party_callback_at
+            description: "The latest first-party callback timestamp for the conversion."
+
+          - name: name
+            description: "The name of the conversion."
+
+          - name: post_click_attribution_window_size
+            description: "The size of the post-click attribution window for the conversion."
+
+          - name: type
+            description: "The type of the conversion."
+
+          - name: url_match_rule_expression
+            description: "The URL match rule expression for the conversion."
+
+          - name: value_amount
+            description: "The value amount associated with the conversion."
+
+          - name: value_currency_code
+            description: "The currency code of the value amount."
+            
+          - name: view_through_attribution_window_size
+            description: "The size of the view-through attribution window for the conversion."
+
+      - name: ad_analytics_by_creative_with_conversion_breakdown
+        description: "This table contains the ad analytics with breakdown of conversions."
+        identifier: "{{ var('linkedin_ads_ad_analytics_by_creative_with_conversion_breakdown_identifier', 'ad_analytics_by_creative_with_conversion_breakdown') }}"
+        columns:
+          - name: conversion_id
+            description: "Unique identifier for each conversion event."
+
+          - name: creative_id
+            description: "Identifier for the creative asset used in the ad."
+
+          - name: day
+            description: "The specific day when the data was recorded."
+
+          - name: _fivetran_synced
+            description: "Indicator of the data synchronization status with Fivetran."
+
+          - name: action_clicks
+            description: "Total number of actionable clicks on the ad."
+
+          - name: ad_unit_clicks
+            description: "Number of clicks received on the ad unit."
+
+          - name: approximate_unique_impressions
+            description: "Estimated count of unique impressions."
+
+          - name: card_clicks
+            description: "Clicks recorded on cards within the ad."
+
+          - name: card_impressions
+            description: "Number of impressions for cards included in the ad."
+
+          - name: clicks
+            description: "Total number of clicks on the ad."
+
+          - name: comment_likes
+            description: "Number of likes on comments within the ad."
+
+          - name: comments
+            description: "LinkedIn Comments: The count of comments. Sponsored Content only."
+
+          - name: company_page_clicks
+            description: "LinkedIn Company Page Clicks: Clicks to your LinkedIn Page."
+
+          - name: conversion_value_in_local_currency
+            description: "Conversion value calculated in local currency."
+
+          - name: cost_in_local_currency
+            description: "Cost of the ad in local currency."
+            
+          - name: cost_in_usd
+            description: "Cost of the ad in USD."
+
+          - name: external_website_conversions
+            description: "LinkedIn External Website Conversions: The total number of times users took the desired action after clicking on or seeing your ad."
+
+          - name: external_website_post_click_conversions
+            description: "LinkedIn External Website Post Click Conversions: Total number of times users took a desired action after clicking on your ad."
+
+          - name: external_website_post_view_conversions
+            description: "LinkedIn External Website Post View Conversions: Total number of times users took a desired action after seeing your ad."
+
+          - name: follows
+            description: "LinkedIn Follows: Total number of clicks to follow your LinkedIn Page."
+
+          - name: full_screen_plays
+            description: "LinkedIn Video Full Screen Plays: Number of times members click on the full screen button to go into full screen mode."
+
+          - name: impressions
+            description: "Total number of times the ad was displayed."
+
+          - name: landing_page_clicks
+            description: "LinkedIn Landing Page Clicks: The count of clicks that take the user to the creative landing page."
+
+          - name: lead_generation_mail_contact_info_shares
+            description: "Number of times contact information was shared via lead generation mail."
+
+          - name: lead_generation_mail_interested_clicks
+            description: "Clicks indicating interest in the lead generation mail."
+
+          - name: likes
+            description: "LinkedIn Likes: The count of likes. Sponsored Content only."
+
+          - name: one_click_lead_form_opens
+            description: "LinkedIn One Click Lead Form Opens: The count of times users opened the lead form for a One Click Lead Gen campaign."
+
+          - name: one_click_leads
+            description: "LinkedIn One Click Leads: The count of leads generated through One Click Lead Gen."
+
+          - name: opens
+            description: "LinkedIn Opens: Number of times your Sponsored Messaging ad was opened."
+
+          - name: other_engagements
+            description: "Other types of engagements not specified in the above categories."
+
+          - name: sends
+            description: "LinkedIn InMail Sends: Number of times your Sponsored Messaging ad was sent."
+
+          - name: shares
+            description: "LinkedIn Shares: The count of shares. Sponsored Content only."
+
+          - name: text_url_clicks
+            description: "Clicks on URLs present in the ad text."
+
+          - name: total_engagements
+            description: "LinkedIn Total Engagements: All member interactions with your ad, both chargeable and free."
+
+          - name: video_completions
+            description: "LinkedIn Video Completions: The number of times your video was watched to 97-100% of its length."
+
+          - name: video_first_quartile_completions
+            description: "LinkedIn Video First Quartile Completions: Number of times your video was watched to 25% of its length."
+
+          - name: video_midpoint_completions
+            description: "LinkedIn Video Midpoint Completions: Number of times your video was watched to 50% of its length."
+            
+          - name: video_starts
+            description: "LinkedIn Video Starts: The count of video ads that were started by users."
+
+          - name: video_third_quartile_completions
+            description: "LinkedIn Video Third Quartile Completions: Number of times your video was watched to 75% of its length."
+
+          - name: video_views
+            description: "LinkedIn Video Views: A video ad playing for at least 2 continuous seconds 50% in-view, or a click on the CTA, whichever comes first."
+
+          - name: viral_card_clicks
+            description: "LinkedIn Viral Card Clicks: The count of clicks on cards within viral content."
+
+          - name: viral_card_impressions
+            description: "LinkedIn Viral Card Impressions: Number of impressions for cards included in viral content."
+
+          - name: viral_clicks
+            description: "LinkedIn Viral Clicks: The count of clicks on viral impressions. Sponsored Content only."
+
+          - name: viral_comment_likes
+            description: "LinkedIn Viral Comment Likes: Number of likes on comments within viral content."
+
+          - name: viral_comments
+            description: "LinkedIn Viral Comments: Number of comments your ads received from viral sharing."
+
+          - name: viral_company_page_clicks
+            description: "LinkedIn Viral Company Page Clicks: The count of clicks to view the company page from viral impressions."
+
+          - name: viral_follows
+            description: "LinkedIn Viral Follows: Number of additional clicks to follow your LinkedIn Page from viral sharing."
+
+          - name: viral_full_screen_plays
+            description: "LinkedIn Viral Full Screen Plays: Number of times members click to go into full screen mode in viral content."
+
+          - name: viral_impressions
+            description: "LinkedIn Viral Impressions: The count of viral impressions resulting from users sharing sponsored content."
+
+          - name: viral_landing_page_clicks
+            description: "LinkedIn Viral Landing Page Clicks: The count of clicks on viral impressions to the creative landing page."
+
+          - name: viral_likes
+            description: "LinkedIn Viral Likes: Number of positive reactions your ads received from viral sharing."
+
+          - name: viral_one_click_lead_form_opens
+            description: "LinkedIn Viral One Click Lead Form Opens: The total count of times users opened the lead form from viral impressions."
+            
+          - name: viral_one_click_leads
+            description: "LinkedIn Viral One Click Leads: The number of leads generated through One Click Lead Gen from viral impressions."
+
+          - name: viral_other_engagements
+            description: "LinkedIn Viral Other Engagements: Other clicks on your ad including various interactions resulting from viral sharing."
+
+          - name: viral_reactions
+            description: "LinkedIn Viral Reactions: Number of positive reactions your ads received from viral sharing."
+
+          - name: viral_shares
+            description: "LinkedIn Viral Shares: The number of shares from viral impressions."
+
+          - name: viral_total_engagements
+            description: "LinkedIn Viral Total Engagements: The count of all user interactions with a viral ad unit."
+
+          - name: viral_video_completions
+            description: "LinkedIn Viral Video Completions: Number of times your video was watched to 97-100% of its length from viral sharing."
+
+          - name: viral_video_first_quartile_completions
+            description: "LinkedIn Viral Video First Quartile Completions: Number of times your video was watched to 25% of its length from viral sharing."
+
+          - name: viral_video_midpoint_completions
+            description: "LinkedIn Viral Video Midpoint Completions: Number of times your video was watched to 50% of its length from viral sharing."
+
+          - name: viral_video_starts
+            description: "LinkedIn Viral Video Starts: The count of viral video ads that were started by users."
+
+          - name: viral_video_third_quartile_completions
+            description: "LinkedIn Viral Video Third Quartile Completions: Number of times your video was watched to 75% of its length from viral sharing."
+
+          - name: viral_video_views
+            description: "LinkedIn Viral Video Views: 2 or more continuous seconds of playback for viral content, or a click on the CTA."
+          
