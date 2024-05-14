@@ -36,3 +36,23 @@ models:
     # Applies to all files under models/example/
     example:
       materialized: view
+
+vars:
+    google_ads_database: datapilot-datadrivenmarketing
+    google_ads_schema: google_ads_fivetran
+
+    linkedin_ads_database: datapilot-datadrivenmarketing
+    linkedin_ads_schema: linkedin_ads_fivetran
+
+    linkedin_pages_database: datapilot-datadrivenmarketing
+    linkedin_pages_schema: linkedin_company_pages
+
+    hubspot_database: datapilot-datadrivenmarketing
+    hubspot_schema: hubspot
+
+    google_analytics_4_database: datapilot-datadrivenmarketing
+    google_analytics_4_schema: google_analytics_4
+
+    clickup_database: datapilot-datadrivenmarketing
+    +schema: dbt_musman2013103_clickup
+    

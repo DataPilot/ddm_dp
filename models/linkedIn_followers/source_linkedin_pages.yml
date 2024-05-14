@@ -1,0 +1,564 @@
+version: 2
+
+sources:
+  - name: linkedin_pages
+    schema: "{{ var('linkedin_pages_schema', 'linkedin_company_pages') }}"
+    database: "{% if target.type != 'spark'%}{{ var('linkedin_pages_database', target.database) }}{% endif %}"
+    loader: Fivetran
+    loaded_at_field: _fivetran_synced
+    tables:
+      - name: share_statistic
+        identifier: "{{ var('linkedin_pages_share_statistic_identifier', 'share_statistic')}}"
+        description: Each record represents the performance of a Linkedin share.
+        columns:
+          - name: _fivetran_id
+            description: The Fivetran ID of the record
+          - name: _fivetran_synced
+            description: The timestamp of when the record was last synced by Fivetran
+          - name: _organization_entity_urn
+            description: The organizational entity URN for which the statistics represents.
+          - name: _share_entity_urn
+            description: The share URN for describing individual share statistics. Is blank for aggregate share statistics.
+          - name: click_count
+            description: Number of clicks.
+          - name: comment_count
+            description: Number of comments.
+          - name: engagement
+            description: Number of organic clicks, likes, comments, and shares over impressions.
+          - name: impression_count
+            description: Number of impressions.
+          - name: like_count
+            description: Number of likes. This field can become negative when members who liked a sponsored share later unlike it. The like is not counted since it is not organic, but the unlike is counted as organic.
+          - name: share_count
+            description: Number of shares.
+
+      - name: ugc_post_share_statistic
+        identifier: "{{ var('linkedin_pages_ugc_post_share_statistic_identifier', 'ugc_post_share_statistic')}}"
+        description: Mapping table between UGC posts and share statistics
+        columns:
+          - name: _fivetran_synced
+            description: The timestamp of when the record was last synced by Fivetran
+          - name: share_statistic_id
+            description: The ID of the share statistic record.
+          - name: ugc_post_id
+            description: The ID of the UGC post record.
+
+      - name: ugc_post_history
+        identifier: "{{ var('linkedin_pages_ugc_post_history_identifier', 'ugc_post_history')}}"
+        description: Each record represents a version of a UGC post.
+        columns:
+          - name: _fivetran_synced
+            description: The timestamp of when the record was last synced by Fivetran
+          - name: author
+            description: Urn of the author of this content.
+          - name: commentary
+            description: The text content of the post. 
+          - name: container_entity
+            description: Urn of container entity that contains the user generated content such as a Group or a Story.
+          - name: created_actor
+            description: User who created the content.
+          - name: created_time
+            description: Timestamp when the content was created.
+          - name: distribution_external_distribution_channels
+            description: List of external distribution channels that the content was distributed to.
+          - name: distribution_feed_distribution
+            description: Specifies the type of feed distribution.
+          - name: first_published_at
+            description: The time at which this content was first published.
+          - name: id
+            description: Unique id for this object.
+          - name: last_modified_actor
+            description: User who last modified the content.
+          - name: last_modified_time
+            description: Timestamp when the content was last modified.
+          - name: lifecycle_state
+            description: The current state of the content.
+          - name: response_context_parent
+            description: The content that a piece of content is a response to. 
+          - name: response_context_root
+            description: The greatest ancestor content that a piece of content is a response to. 
+          - name: visibility
+            description: Visibility restrictions on content. 
+
+      - name: organization
+        identifier: "{{ var('linkedin_pages_organization_identifier', 'organization')}}"
+        description: Each record represents an organization.
+        columns:
+          - name: _fivetran_synced
+            description: The timestamp of when the record was last synced by Fivetran
+          - name: cover_photo_v_2_crop_info_height
+            description: The height of the cover photo.
+          - name: cover_photo_v_2_crop_info_width
+            description: The width of the cover photo.
+          - name: cover_photo_v_2_crop_info_x
+            description: The X coordinate of the corner of the cover photo
+          - name: cover_photo_v_2_crop_info_y
+            description: The Y coordinate of the corner of the cover photo
+          - name: cover_photo_v_2_cropped
+            description: Location of the cropped image
+          - name: cover_photo_v_2_original
+            description: Location of the original image
+          - name: default_locale_country
+            description: The default country of the organization.
+          - name: default_locale_language
+            description: The default language of the organization.
+          - name: description_localized
+            description: The localized description of the organization.
+          - name: description_preferred_locale_country
+            description: The preferred country of the organization.
+          - name: description_preferred_locale_language
+            description: The preferred language of the organization.
+          - name: founded_on_day
+            description: The day of the month that the organization was founded.
+          - name: founded_on_month
+            description: The month of the year that the organization was founded.
+          - name: founded_on_year
+            description: The year that the organization was founded.
+          - name: id
+            description: Unique id for the organization
+          - name: localized_description
+            description: The localized description of the organization.
+          - name: localized_name
+            description: The localized name of the organization.
+          - name: localized_website
+            description: The localized website of the organization.
+          - name: logo_v_2_crop_info_height
+            description: The height of the logo.
+          - name: logo_v_2_crop_info_width
+            description: The width of the logo.
+          - name: logo_v_2_crop_info_x
+            description: The X coordinate of the corner of the logo
+          - name: logo_v_2_crop_info_y
+            description: The Y coordinate of the corner of the logo
+          - name: logo_v_2_cropped
+            description: Location of the cropped image
+          - name: logo_v_2_original
+            description: Location of the original image
+          - name: name_localized
+            description: The localized name of the organization.
+          - name: name_preferred_locale_country
+            description: The preferred country of the organization.
+          - name: name_preferred_locale_language
+            description: The preferred language of the organization.
+          - name: organization_status
+            description: The status of the organization.
+          - name: organization_type
+            description: The type of organization.
+          - name: overview_photo_v_2_crop_info_height
+            description: The height of the overview photo.
+          - name: overview_photo_v_2_crop_info_width
+            description: The width of the overview photo.
+          - name: overview_photo_v_2_crop_info_x
+            description: The X coordinate of the corner of the overview photo
+          - name: overview_photo_v_2_crop_info_y
+            description: The Y coordinate of the corner of the overview photo
+          - name: overview_photo_v_2_cropped
+            description: Location of the cropped image
+          - name: overview_photo_v_2_original
+            description: Location of the original image
+          - name: parent_relationship_parent_id
+            description: URN of the parent organization.
+          - name: parent_relationship_status
+            description: The status of the parent organization.
+          - name: parent_relationship_type
+            description: The type of parent organization.
+          - name: primary_organization_type
+            description: The primary type of organization.
+          - name: school_attributes_hierarchy_classification
+            description: The classification for school hierarchy.
+          - name: school_attributes_legacy_school
+            description: Legacy school urn for the organization.
+          - name: school_attributes_type
+            description: The type of institution.
+          - name: school_attributes_year_level
+            description: Classification of the length of the institution's educational programs. These levels are defined by the National Center for Education Statistics
+          - name: staff_count_range
+            description: Range of the number of staff associated with this entity.
+          - name: vanity_name
+            description: Entity's unique name used in URLs.
+          - name: version_tag
+            description: Tag indicating version.
+          - name: website_localized
+            description: The localized website of the organization.
+          - name: website_preferred_locale_country
+            description: The preferred country of the organization.
+          - name: website_preferred_locale_language
+            description: The preferred language of the organization.
+
+      - name: organization_ugc_post
+        identifier: "{{ var('linkedin_pages_organization_ugc_post_identifier', 'organization_ugc_post')}}"
+        description: Mapping table for organizations and UGC posts.
+        columns:
+          - name: _fivetran_synced
+            description: The timestamp of when the record was last synced by Fivetran
+          - name: organization_id
+            description: Unique id for the organization
+          - name: ugc_post_id
+            description: Unique id for the UGC post
+
+      - name: post_content
+        identifier: "{{ var('linkedin_pages_post_content_identifier', 'post_content')}}"
+        description: Content of posts.
+        columns:
+          - name: _fivetran_synced
+            description: The timestamp of when the record was last synced by Fivetran
+          - name: _fivetran_id
+            description: The Fivetran ID of the record
+          - name: post_id
+            description: The ID of the post record.
+          - name: article_description
+            description: Custom or saved description of the article. If empty, there is none. 
+          - name: article_source
+            description: A URL of the article. Typically the URL that was ingested to maintain URL parameters. 
+          - name: article_thumbnail
+            description: 	Custom or saved thumbnail for the article. If empty, there is none. 
+          - name: article_thumbnail_alt_text
+            description: Alt text for the custom thumbnail. If empty, there is none. 
+          - name: article_title
+            description: Custom or saved title of the article. 
+          - name: carousel_id
+            description: The URN of the carousel content.
+          - name: media_alt_text
+            description: The alternative text for the media. None if empty. 
+          - name: media_id
+            description: 	The id of the media.
+          - name: media_title
+            description: The title for media. None if empty. 
+          - name: multi_image_alt_text
+            description: The alternate text of this thumbnail. Used for screen reader accessibility.
+          - name: poll_question
+            description: Question for the poll. Max length of 140 characters.
+          - name: poll_settings_duration
+            description: Duration of poll being open for votes. 
+          - name: poll_settings_is_voter_visible_to_author
+            description: Poll author’s visibility to voters. Defaults to true.
+          - name: poll_settings_vote_selection_type
+            description: The selection type of votes on the poll. Defaults to SINGLE_VOTE.
+          - name: poll_unique_voters_count
+            description: Number of unique voters on the poll. Defaults to 0.
+          - name: type
+            description: The type of the post.
+      
+      - name: country
+        identifier: "{{ var('linkedin_pages_country_identifier', 'country')}}"
+        description: "This table contains country information with LinkedIn data."
+        columns:
+          - name: id
+            description: "The unique identifier for a country."
+          - name: _fivetran_synced
+            description: "The timestamp of when the record was last synced by Fivetran."
+          - name: country_group
+            description: "The grouping category of the country."
+          - name: name
+            description: "The name of the country."
+            
+      - name: followers_by_country
+        identifier: "{{ var('linkedin_pages_followers_by_country_identifier', 'followers_by_country')}}"
+        description: "This table contains the number of organic and paid followers by country for LinkedIn pages."
+        columns:
+          - name: _fivetran_id
+            description: "The Fivetran-generated unique identifier for the record."
+          - name: _fivetran_synced
+            description: "The timestamp of when the record was last synced by Fivetran."
+          - name: _organization_entity_urn
+            description: "The unique identifier for the organization associated with the LinkedIn page."
+          - name: country_id
+            description: "The unique identifier for the country, corresponding to the 'id' field in the country table."
+          - name: follower_counts_organic_follower_count
+            description: "The count of organic followers from the country for the LinkedIn page."
+          - name: follower_counts_paid_follower_count
+            description: "The count of paid followers from the country for the LinkedIn page."
+    
+      - name: seniority
+        identifier: "{{ var('linkedin_pages_seniority_identifier', 'seniority')}}"
+        description: "This table contains information about different levels of seniority."
+        columns:
+         - name: id
+           description: "The unique identifier for the seniority level."
+         - name: _fivetran_synced
+           description: "The timestamp of when the seniority record was last synced."
+         - name: name
+           description: "The name of the seniority level."
+
+
+      
+      - name: followers_by_seniority
+        identifier: "{{ var('linkedin_pages_followers_by_seniority_identifier', 'followers_by_seniority')}}"
+        description: "This table contains data about the number of followers segmented by seniority level for LinkedIn pages."
+        columns:
+        - name: _fivetran_id
+          description: "The Fivetran-generated unique identifier for the record."
+        - name: _fivetran_synced
+          description: "The timestamp of when the record was last synced by Fivetran."
+        - name: _organization_entity_urn
+          description: "The unique identifier for the organization associated with the LinkedIn page."
+        - name: follower_counts_organic_follower_count
+          description: "The count of organic followers from the seniority level for the LinkedIn page."
+        - name: follower_counts_paid_follower_count
+          description: "The count of paid followers from the seniority level for the LinkedIn page."
+        - name: seniority_id
+          description: "The unique identifier for the seniority level, corresponding to the 'id' field in the seniority table."
+
+      - name: function 
+        identifier: "{{ var('linkedin_pages_function_identifier', 'function')}}"
+        description: "This table contains information about various business functions or departments."
+        columns:
+          - name: id
+            description: "The unique identifier for each business function or department."
+          - name: _fivetran_synced
+            description: "The timestamp of when the function record was last synced by Fivetran."
+          - name: name
+            description: "The name of the function or department."
+
+      - name: followers_by_function
+        identifier: "{{ var('linkedin_pages_followers_by_function_identifier', 'followers_by_function')}}"
+        description: "This table contains data about the number of followers segmented by business function, including both organic and paid followers for LinkedIn pages."
+        columns:
+          - name: _fivetran_id
+            description: "The Fivetran-generated unique identifier for the record."
+          - name: _fivetran_synced
+            description: "The timestamp of when the record was last synced by Fivetran."
+          - name: _organization_entity_urn
+            description: "The unique identifier for the organization associated with the LinkedIn page."
+          - name: follower_counts_organic_follower_count
+            description: "The count of organic followers from the function for the LinkedIn page."
+          - name: follower_counts_paid_follower_count
+            description: "The count of paid followers from the function for the LinkedIn page."
+          - name: function_id
+            description: "The unique identifier for the business function, corresponding to the 'id' field in the function table."
+
+      - name: followers_by_staff_count_range
+        identifier: "{{ var('linkedin_pages_followers_by_staff_count_range_identifier', 'followers_by_staff_count_range')}}"
+        description: "This table tracks the number of LinkedIn page followers segmented by the staff count range of the organization."
+        columns:
+          - name: _fivetran_id
+            description: "The Fivetran-generated unique identifier for the record."
+          - name: _fivetran_synced
+            description: "The timestamp of when the record was last synced by Fivetran."
+          - name: _organization_entity_urn
+            description: "The unique identifier for the organization associated with the LinkedIn page."
+          - name: follower_counts_organic_follower_count
+            description: "The count of organic followers for the LinkedIn page, categorized by the organization's staff count range."
+          - name: follower_counts_paid_follower_count
+            description: "The count of paid followers for the LinkedIn page, categorized by the organization's staff count range."
+          - name: staff_count_range
+            description: "A categorization of the organization's staff count, such as 'SIZE_10001_OR_MORE', 'SIZE_201_TO_500', etc."
+
+      - name: followers_by_industry
+        identifier: "{{ var('linkedin_pages_followers_by_industry_identifier', 'followers_by_industry')}}"
+        description: "This table contains data about the number of followers for LinkedIn pages, segmented by industry."
+        columns:
+          - name: _fivetran_id
+            description: "The Fivetran-generated unique identifier for the record."
+          - name: _fivetran_synced
+            description: "The timestamp of when the record was last synced by Fivetran."
+          - name: _organization_entity_urn
+            description: "The unique identifier for the organization associated with the LinkedIn page."
+          - name: follower_counts_organic_follower_count
+            description: "The count of organic followers for the LinkedIn page, categorized by industry."
+          - name: follower_counts_paid_follower_count
+            description: "The count of paid followers for the LinkedIn page, categorized by industry."
+          - name: industry_id
+            description: "The unique identifier for the industry associated with the LinkedIn page."
+    
+      - name: industry
+        identifier: "{{ var('linkedin_pages_industry_identifier', 'industry')}}"
+        description: "This table contains a list of various industries with their unique identifiers and names."
+        columns:
+          - name: id
+            description: "The unique identifier for each industry."
+          - name: _fivetran_synced
+            description: "The timestamp of when the industry record was last synced by Fivetran."
+          - name: name
+            description: "The name of the industry, such as 'IT System Testing and Evaluation', 'Law Enforcement', 'Public Safety', etc."
+
+      - name: total_follower_statistic 
+        identifier: "{{ var('linkedin_pages_total_follower_statistic_identifier', 'total_follower_statistic')}}"
+        description: "This table records daily changes in first-degree network size for an organization on LinkedIn."
+        columns:
+          - name: _fivetran_id
+            description: "The unique identifier for the record provided by Fivetran."
+          - name: _fivetran_synced
+            description: "The timestamp indicating when the record was last synchronized by Fivetran."
+          - name: _organization_entity_urn
+            description: "The unique identifier for the organization associated with the LinkedIn page."
+          - name: day
+            description: "The date for which the first-degree network size is recorded."
+          - name: first_degree_size
+            description: "The size of the first-degree network (e.g., number of direct connections) for the organization on the specified day."
+
+      - name: time_bound_follower_statistic
+        identifier: "{{ var('linkedin_pages_time_bound_follower_statistic_identifier', 'time_bound_follower_statistic') }}"
+        description: "This table records the statistics of followers gained over time, both organically and through paid means, for LinkedIn company pages."
+        columns:
+          - name: _fivetran_id
+            description: "A unique identifier for each record, generated by Fivetran."
+          - name: day
+            description: "The timestamp representing the day for which follower statistics are recorded."
+          - name: _fivetran_synced
+            description: "The timestamp of the last synchronization with Fivetran."
+          - name: follower_gains_organic_follower_gain
+            description: "The number of followers gained organically on the specified day."
+          - name: follower_gains_paid_follower_gain
+            description: "The number of followers gained through paid means on the specified day."
+          - name: organization_entity
+            description: "The unique identifier for the organization associated with the LinkedIn page."
+
+      - name: organization_followers_by_industry
+        identifier: "{{ var('linkedin_pages_organization_followers_by_industry_identifier', 'organization_followers_by_industry') }}"
+        description: "This table contains information about the followers of organizations, categorized by industry."
+        columns:
+          - name: followers_by_industry_id
+            description: "The unique identifier for the follower record, categorized by industry."
+          - name: organization_id
+            description: "The unique identifier of the organization associated with the followers."
+          - name: _fivetran_synced
+            description: "The timestamp of when the record was last synced with Fivetran."
+
+      - name: time_bound_page_statistic
+        identifier: "{{ var('linkedin_pages_time_bound_page_statistic_identifier', 'time_bound_page_statistic') }}"
+        description: "This table records various page view statistics across different sections of a LinkedIn company page, both for desktop and mobile platforms."
+        columns:
+          - name: careers_page_views
+            description: "Number of views of the careers page."
+          - name: careers_unique_page_views
+            description: "Number of unique views of the careers page."
+          - name: desktop_about_page_views
+            description: "Number of desktop views of the about page."
+          - name: desktop_about_unique_page_views
+            description: "Number of unique desktop views of the about page."
+          - name: desktop_careers_page_views
+            description: "Number of desktop views of the careers page."
+          - name: desktop_careers_unique_page_views
+            description: "Number of unique desktop views of the careers page."
+          - name: desktop_insights_page_views
+            description: "Number of desktop views of the insights page."
+          - name: desktop_insights_unique_page_views
+            description: "Number of unique desktop views of the insights page."
+          - name: desktop_jobs_page_views
+            description: "Number of desktop views of the jobs page."
+          - name: desktop_jobs_unique_page_views
+            description: "Number of unique desktop views of the jobs page."
+          - name: desktop_life_at_page_views
+            description: "Number of desktop views of the life at page."
+          - name: desktop_life_at_unique_page_views
+            description: "Number of unique desktop views of the life at page."
+          - name: desktop_overview_page_views
+            description: "Number of desktop views of the overview page."
+          - name: desktop_overview_unique_page_views
+            description: "Number of unique desktop views of the overview page."
+          - name: desktop_people_page_views
+            description: "Number of desktop views of the people page."
+          - name: desktop_people_unique_page_views
+            description: "Number of unique desktop views of the people page."
+          - name: desktop_products_page_views
+            description: "Number of desktop views of the products page."
+          - name: desktop_products_unique_page_views
+            description: "Number of unique desktop views of the products page."
+          - name: insights_page_views
+            description: "Number of views of the insights page."
+          - name: insights_unique_page_views
+            description: "Number of unique views of the insights page."
+          - name: jobs_page_views
+            description: "Number of views of the jobs page."
+          - name: jobs_unique_page_views
+            description: "Number of unique views of the jobs page."
+          - name: life_at_page_views
+            description: "Number of views of the life at page."
+          - name: life_at_unique_page_views
+            description: "Number of unique views of the life at page."
+          - name: mobile_about_page_views
+            description: "Number of views of the about page on mobile devices."
+          - name: mobile_about_unique_page_views
+            description: "Number of unique views of the about page on mobile devices."
+          - name: mobile_careers_page_employees_clicks
+            description: "Number of clicks on the employees section of the careers page on mobile devices."
+          - name: mobile_careers_page_jobs_clicks
+            description: "Number of clicks on the jobs section of the careers page on mobile devices."
+          - name: mobile_careers_page_promo_links_clicks
+            description: "Number of clicks on promotional links in the careers page on mobile devices."
+          - name: mobile_careers_page_views
+            description: "Number of views of the careers page on mobile devices."
+          - name: mobile_careers_unique_page_views
+            description: "Number of unique views of the careers page on mobile devices."
+          - name: mobile_insights_page_views
+            description: "Number of views of the insights page on mobile devices."
+          - name: mobile_insights_unique_page_views
+            description: "Number of unique views of the insights page on mobile devices."
+          - name: mobile_jobs_page_views
+            description: "Number of views of the jobs page on mobile devices."
+          - name: mobile_jobs_unique_page_views
+            description: "Number of unique views of the jobs page on mobile devices."
+          - name: mobile_life_at_page_views
+            description: "Number of views of the life at page on mobile devices."
+          - name: mobile_life_at_unique_page_views
+            description: "Number of unique views of the life at page on mobile devices."
+          - name: mobile_overview_page_views
+            description: "Number of views of the overview page on mobile devices."
+          - name: mobile_overview_unique_page_views
+            description: "Number of unique views of the overview page on mobile devices."
+          - name: mobile_people_page_views
+            description: "Number of views of the people page on mobile devices."
+          - name: mobile_people_unique_page_views
+            description: "Number of unique views of the people page on mobile devices."
+          - name: mobile_products_page_views
+            description: "Number of views of the products page on mobile devices."
+          - name: mobile_products_unique_page_views
+            description: "Number of unique views of the products page on mobile devices."
+          - name: organization_entity
+            description: "The unique identifier for the organization associated with the LinkedIn page."
+          - name: overview_page_views
+            description: "Total number of views of the overview page."
+          - name: overview_unique_page_views
+            description: "Total number of unique views of the overview page."
+          - name: people_page_views
+            description: "Total number of views of the people page."
+          - name: people_unique_page_views
+            description: "Total number of unique views of the people page."
+          - name: products_page_views
+            description: "Total number of views of the products page."
+          - name: products_unique_page_views
+            description: "Total number of unique views of the products page."
+
+      - name: time_bound_share_statistic
+        identifier: "{{ var('linkedin_pages_time_bound_share_statistic_identifier', 'time_bound_share_statistic') }}"
+        description: "This table contains statistics about shares, likes, and other engagement metrics for LinkedIn pages, aggregated on a daily basis."
+        columns:
+          - name: _fivetran_id
+            description: "The unique identifier for the record, generated by Fivetran."
+          - name: day
+            description: "The date for which the statistics are aggregated."
+          - name: _fivetran_synced
+            description: "Timestamp indicating when the record was last synced by Fivetran."
+          - name: click_count
+            description: "The number of clicks recorded."
+          - name: comment_count
+            description: "The count of comments made."
+          - name: comment_mentions_count
+            description: "The number of times comments mentioned the page."
+          - name: engagement
+            description: "A measure of user interaction with the page, such as likes, shares, etc."
+          - name: impression_count
+            description: "The number of times the content was displayed."
+          - name: like_count
+            description: "The number of likes recorded."
+          - name: organization_entity
+            description: "The unique identifier for the organization."
+          - name: share_count
+            description: "The count of shares made."
+          - name: share_mentions_count
+            description: "The number of times shares mentioned the page."
+          - name: unique_impressions_count
+            description: "The count of content displayed to unique users."
+            
+
+      - name: organization_time_bound_page_statistic
+        identifier: "{{ var('organization_time_bound_page_statistic_identifier', 'organization_time_bound_page_statistic') }}"
+        description: "A description of your model, explaining its purpose and contents."
+        columns:
+          - name: organization_id
+            description: "A unique identifier for the organization."
+          - name: time_bound_page_statistic_id
+            description: "A unique identifier for the time-bound page statistic."
+          - name: _fivetran_synced
+            description: "Timestamp indicating when this record was last synced by Fivetran."

@@ -1,0 +1,310 @@
+version: 2
+
+sources:
+  - name: clickup_latest
+    schema: "{{ var('clickup_latest_schema', 'clickup_latest') }}"
+    database: "{% if target.type != 'spark'%}{{ var('clickup_latest_database', target.database) }}{% endif %}"
+    loader: Fivetran
+    loaded_at_field: _fivetran_synced
+    
+    tables:
+
+
+      -  name: folder
+         description: "This table contains information about folders in ClickUp, including details like name, order, and associated tasks."
+         columns:
+          - name: id
+            description: "Unique identifier for each folder."
+          - name: _fivetran_deleted
+            description: "Indicates if the folder has been deleted in the source system. Boolean value."
+          - name: _fivetran_synced
+            description: "Timestamp of the last synchronization with Fivetran."
+          - name: archived
+            description: "Indicates if the folder is archived. Boolean value."
+          - name: hidden
+            description: "Indicates if the folder is hidden. Boolean value."
+          - name: name
+            description: "Name of the folder."
+          - name: order_index
+            description: "Order index of the folder within ClickUp."
+          - name: override_statuses
+            description: "Indicates if default statuses are overridden in the folder. Boolean value."
+          - name: permission_level
+            description: "Level of permission assigned to the folder."
+          - name: space_id
+            description: "Unique identifier for the space to which the folder belongs."
+          - name: statuses
+            description: "JSON object containing the statuses associated with the folder."
+          - name: task_count
+            description: "Count of tasks within the folder."
+
+      
+
+
+      - name: space
+        description: "This table contains ClickUp data with various attributes."
+        columns:
+          - name: id
+            description: "Unique identifier for each entry."
+          - name: _fivetran_deleted
+            description: "Indicates if the record was deleted in the source system."
+          - name: _fivetran_synced
+            description: "Timestamp of the last sync with Fivetran."
+          - name: admin_can_manage
+            description: "Indicates if the admin can manage."
+          - name: archived
+            description: "Indicates if the item is archived."
+          - name: check_unresolved_enabled
+            description: "Enables checking of unresolved items."
+          - name: color
+            description: "Color associated with the item."
+          - name: custom_fields_enabled
+            description: "Indicates if custom fields are enabled."
+          - name: custom_items_enabled
+            description: "Indicates if custom items are enabled."
+          - name: dependency_warning_enabled
+            description: "Indicates if dependency warning is enabled."
+          - name: due_date_enabled
+            description: "Indicates if due date is enabled."
+          - name: due_date_start_date
+            description: "Start date for the due date."
+          - name: milestones_enabled
+            description: "Indicates if milestones are enabled."
+          - name: multiple_assignees
+            description: "Indicates if multiple assignees are allowed."
+          - name: multiple_assignees_enabled
+            description: "Indicates if having multiple assignees is enabled."
+          - name: name
+            description: "Name of the item."
+          - name: points_enabled
+            description: "Indicates if points are enabled."
+          - name: priorities_enabled
+            description: "Indicates if priorities are enabled."
+          - name: private
+            description: "Indicates if the item is private."
+          - name: remap_closed_due_date
+            description: "Remapped closed due date."
+          - name: remap_due_date
+            description: "Remapped due date."
+          - name: sprints_enabled
+            description: "Indicates if sprints are enabled."
+          - name: tags_enabled
+            description: "Indicates if tags are enabled."
+          - name: team_id
+            description: "ID of the team."
+          - name: time_estimates_enabled
+            description: "Indicates if time estimates are enabled."
+          - name: time_tracking_enabled
+            description: "Indicates if time tracking is enabled."
+          - name: time_tracking_harvest
+            description: "Indicates if time tracking harvest is enabled."
+          - name: time_tracking_rollup
+            description: "Indicates if time tracking rollup is enabled."
+          - name: zoom
+            description: "Zoom level or detail."
+
+
+      - name: task
+        description: "This table contains ClickUp task data with various attributes."
+        columns:
+          - name: id
+            description: "Unique identifier for each task."
+          - name: _fivetran_deleted
+            description: "Indicates if the record was deleted in the source system."
+          - name: _fivetran_synced
+            description: "Timestamp of the last sync with Fivetran."
+          - name: archived
+            description: "Indicates if the task is archived."
+          - name: creator_color
+            description: "Color associated with the task creator."
+          - name: creator_id
+            description: "Unique identifier of the task creator."
+          - name: creator_username
+            description: "Username of the task creator."
+          - name: custom_fields
+            description: "Custom fields associated with the task."
+          - name: date_closed
+            description: "Date when the task was closed."
+          - name: date_created
+            description: "Date when the task was created."
+          - name: date_done
+            description: "Date when the task was marked as done."
+          - name: date_updated
+            description: "Date when the task was last updated."
+          - name: description
+            description: "Description of the task."
+          - name: due_date
+            description: "Due date of the task."
+          - name: folder_id
+            description: "Identifier of the folder containing the task."
+          - name: list_id
+            description: "Identifier of the list containing the task."
+          - name: name
+            description: "Name of the task."
+          - name: order_index
+            description: "Order index of the task within its list."
+          - name: priority
+            description: "Priority of the task."
+          - name: priority_color
+            description: "Color associated with the task's priority."
+          - name: priority_id
+            description: "Identifier for the task's priority."
+          - name: priority_order_index
+            description: "Order index of the task's priority."
+          - name: project_id
+            description: "Identifier of the project associated with the task."
+          - name: space_id
+            description: "Identifier of the space associated with the task."
+          - name: start_date
+            description: "Start date of the task."
+          - name: status_color
+            description: "Color associated with the task's status."
+          - name: status_order_index
+            description: "Order index of the task's status."
+          - name: status_status
+            description: "Current status of the task."
+          - name: status_type
+            description: "Type of the task's status."
+          - name: team_id
+            description: "Identifier of the team associated with the task."
+          - name: text_content
+            description: "Text content of the task."
+          - name: time_estimate
+            description: "Estimated time required to complete the task."
+          - name: time_spent
+            description: "Time spent on the task."
+          - name: url
+            description: "URL of the task."
+
+      - name: task_assignee
+        description: "This table contains the assignment information of tasks to users."
+        columns:
+          - name: id
+            description: "The unique identifier for each task assignment record."
+          - name: task_id
+            description: "The unique identifier of the task that is assigned."
+          - name: _fivetran_deleted
+            description: "Indicates whether the task assignment record has been marked as deleted in the source system."
+          - name: _fivetran_synced
+            description: "The timestamp at which the task assignment record was last synchronized with"
+            
+      - name: task_tag
+        description: "Table containing tags for tasks, including billable and non-billable tags."
+        columns:
+          - name: _fivetran_id
+            description: "Unique identifier for the record from Fivetran sync."
+          - name: _fivetran_deleted
+            description: "Indicates whether the record is marked as deleted."
+          - name: _fivetran_synced
+            description: "Timestamp of the last sync operation by Fivetran."
+          - name: creator
+            description: "ID of the user who created the tag."
+          - name: name
+            description: "Name of the tag, e.g., billable, non-billable."
+          - name: tag_bg
+            description: "Background color of the tag."
+          - name: tag_fg
+            description: "Foreground color of the tag."
+          - name: task_id
+            description: "Associated task ID for the tag."
+
+        
+      - name: team
+        description: "This table contains company data including the id, name, and avatar."
+        columns:
+          - name: id
+            description: "The unique identifier for each company."
+          - name: _fivetran_deleted
+            description: "A boolean flag indicating if the record has been deleted in the source system."
+          - name: _fivetran_synced
+            description: "The timestamp at which the record was last synchronized with Fivetran."
+          - name: avatar
+            description: "The URL or identifier for the company's avatar image."
+          - name: color
+            description: "A color code associated with the company, possibly used for display purposes."
+          - name: name
+            description: "The name of the company."
+      
+      - name: team_member
+        description: "This table contains information about team members within the company including their roles, activity, and contact details."
+        columns:
+          - name: team_id
+            description: "A unique identifier for the company or team."
+          - name: user_id
+            description: "A unique identifier for the user who is a member of the team."
+          - name: _fivetran_deleted
+            description: "Indicates whether the record has been marked as deleted in the source system."
+          - name: _fivetran_synced
+            description: "The timestamp at which the record was last synchronized with Fivetran."
+          - name: color
+            description: "A color code associated with the team member, often used for display purposes."
+          - name: date_invited
+            description: "The date on which the team member was invited to the team."
+          - name: date_joined
+            description: "The date on which the team member accepted the invitation and joined the team."
+          - name: email
+            description: "The email address of the team member."
+          - name: initials
+            description: "The initials of the team member, which may be used as a shorthand representation or avatar fallback."
+          - name: invited_by_id
+            description: "The user identifier of the person who invited the team member."
+          - name: last_active
+            description: "The last date and time the team member was active."
+          - name: profile_picture
+            description: "A URL to the team member's profile picture."
+          - name: role
+            description: "The role of the team member within the team or organization."
+          - name: username
+            description: "The username of the team member."
+
+      - name: time_entry
+        description: "This table contains time entry records from ClickUp with details about task timing and billability."
+        columns:
+          - name: id
+            description: "The unique identifier for the time entry."
+          - name: _fivetran_deleted
+            description: "Indicates whether the record has been logically deleted."
+          - name: _fivetran_synced
+            description: "The timestamp when the record was last synced."
+          - name: at_time
+            description: "An integer representing the Unix timestamp of the time entry."
+          - name: billable
+            description: "Boolean indicating whether the time entry is billable."
+          - name: description
+            description: "A description of the time entry."
+          - name: duration
+            description: "The duration of the time spent on the task in seconds."
+          - name: end_time
+            description: "An integer representing the Unix timestamp for when the task ended."
+          - name: folder_id
+            description: "The identifier of the folder related to the time entry."
+          - name: list_id
+            description: "The identifier of the list related to the time entry."
+          - name: source
+            description: "The source of the time entry."
+          - name: space_id
+            description: "The identifier of the space related to the time entry."
+          - name: start_time
+            description: "An integer representing the Unix timestamp for when the task started."
+          - name: tags
+            description: "Tags associated with the time entry."
+          - name: task_id
+            description: "The string identifier of the task related to the time entry."
+          - name: task_name
+            description: "The name of the task related to the time entry."
+          - name: task_status
+            description: "The status of the task related to the time entry."
+          - name: task_status_color
+            description: "The color associated with the task status."
+          - name: task_status_order_index
+            description: "The order index of the task status."
+          - name: task_status_type
+            description: "The type of the task status."
+          - name: task_url
+            description: "The URL of the task related to the time entry."
+          - name: team_id
+            description: "The identifier of the team related to the time entry."
+          - name: user_id
+            description: "The identifier of the user who created the time entry."
+          - name: w_id
+            description: "An identifier related to the time entry, purpose not specified."
